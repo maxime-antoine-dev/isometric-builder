@@ -20,13 +20,20 @@
                 </div>
             </div>
             <div class="btns-container">
-                <div class="btn-container">
-                    <label for="input-zoom">Zoom</label>
-                    <input id="input-zoom" name="input-zoom" type="range" value="1" min ="0.25" max="3" step="0.01" onInput="builder.update()">
+                <div class="left">
+                    <div class="btn-container">
+                        <label for="input-zoom">Zoom</label>
+                        <input id="input-zoom" name="input-zoom" type="range" value="1" min ="0.25" max="3" step="0.01" onInput="builder.update()">
+                    </div>
+                    <div class="btn-container">
+                        <label for="input-active-layer">Active Layer</label>
+                        <input id="input-active-layer" name="input-active-layer" type="range" value="0" min ="0" step="1" onInput="builder.update()">
+                    </div>
                 </div>
-                <div class="btn-container">
-                    <label for="input-active-layer">Active Layer</label>
-                    <input id="input-active-layer" name="input-active-layer" type="range" value="0" min ="0" step="1" onInput="builder.update()">
+                <div class="right">
+                    <div class="btn-container">
+                        <div id="input-view-mode" onclick="builder.switchViewMode()"><img id="input-view-mode-icon" src="assets/icons/eye.svg"></div>
+                    </div>
                 </div>
             </div>
         </div>

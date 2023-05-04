@@ -4,11 +4,13 @@ class Builder {
     constructor(dX, dY, dZ) {
         this.blockWidth = 64;
         this.blockHeight = 64;
-        this.gridColor = "#585a64";
+        this.gridColor = "#43454d";
         this.gridActiveColor = "#36d3ff";
         this.dX = dX;
         this.dY = dY;
         this.dZ = dZ;
+        this.viewMode = false;
+        this.selectedBlock = new Block();
         this.blocks = this.makeGrid();
         document.getElementById("input-active-layer").setAttribute("max", this.dZ - 1);
         this.canvas = document.getElementById("canvas-builder");
@@ -16,14 +18,28 @@ class Builder {
         this.update();
 
         this.canvas.addEventListener("mousemove", (e) => {
-            let pos = this.getMousePos(e);
-            let tilePos = this.getSelectedTile(pos['x'], pos['y']);
-            this.drawGrid();
-            this.highlightTile(tilePos["x"], tilePos["y"], tilePos["z"]);
+            if(! this.viewMode) {
+                let pos = this.getMousePos(e);
+                let tilePos = this.getSelectedTile(pos['x'], pos['y']);
+                this.draw();
+                this.highlightTile(tilePos["x"], tilePos["y"], tilePos["z"]);
+                this.previewBlock(tilePos["x"], tilePos["y"], tilePos["z"]);
+            }
         });
 
         this.canvas.addEventListener("mouseout", (e) => {
-            this.drawGrid();
+            if(! this.viewMode) {
+               this.draw();
+            }
+        });
+        
+        this.canvas.addEventListener("mousedown", (e) => {
+            if(! this.viewMode) {
+                let pos = this.getMousePos(e);
+                let tilePos = this.getSelectedTile(pos['x'], pos['y']);
+                this.placeBlock(tilePos["x"], tilePos["y"], tilePos["z"]);
+                this.draw();
+            }
         });
     }
 
@@ -42,7 +58,7 @@ class Builder {
         this.origin = {"x" : 0.5 * this.dX * this.blockWidth * this.zoom, "y" : this.canvas.height - this.canvas.width * 0.5 };
         this.tilesPositions = this.getTilesPositions();
         this.activeLayer = parseInt(document.getElementById("input-active-layer").value);
-        this.drawGrid();
+        this.draw();
         if (document.getElementById("canvas-container").offsetWidth > this.canvas.width) {
             document.getElementById("canvas-wrapper").style.justifyContent = "center";
         } else {
@@ -60,6 +76,18 @@ class Builder {
             arrX.push(arrY);
         }
         return arrX;
+    }
+
+    drawBlockLayer(level = 0, active = false) {
+        this.ctx.globalAlpha = (active)? 1 : 0.5;
+        for (let i = 0; i < this.dX; i++) {
+            for (let j = 0; j < this.dY; j++) {
+                if (this.blocks[level][j][i] != undefined) {
+                    this.ctx.drawImage(this.blocks[level][j][i].image, this.tilesPositions[level][j][i]["x"]  - 0.5 * this.blockWidth * this.zoom, this.tilesPositions[level][j][i]["y"]  - 0.75 * this.blockHeight * this.zoom, this.blockWidth * this.zoom, this.blockHeight * this.zoom);
+                }
+            }
+        }
+        this.ctx.globalAlpha = 1;
     }
 
     drawLayer(level = 0, active = false) {
@@ -96,14 +124,26 @@ class Builder {
         }         
     }
 
-    drawGrid() {
+    draw() {
         this.clear();
-        for (let i = 0; i < this.dZ; i ++) {
-            if (i != this.activeLayer) {
-                this.drawLayer(i);
+        if (! this.viewMode) {
+            for (let i = 0; i < this.dZ; i ++) {
+                if (i != this.activeLayer) {
+                    this.drawLayer(i);
+                }
+            }
+            for (let i = 0; i < this.dZ; i ++) {
+                if (i != this.activeLayer) {
+                    this.drawBlockLayer(i);
+                }
+            }
+            this.drawLayer(this.activeLayer, true);
+            this.drawBlockLayer(this.activeLayer, true);
+        } else {
+            for (let i = 0; i < this.dZ; i ++) {
+                    this.drawBlockLayer(i, true);
             }
         }
-        this.drawLayer(this.activeLayer, true);
     }
 
     clear() {
@@ -112,7 +152,7 @@ class Builder {
 
     selectLayer(level) {
         this.activeLayer = level;
-        this.drawGrid();
+        this.draw();
     }
 
     getTilesPositions() {
@@ -156,7 +196,6 @@ class Builder {
 
     highlightTile(x, y, z) {
         let pos = this.tilesPositions[z][y][x];
-        console.log
         this.ctx.beginPath();
         this.ctx.moveTo(pos["x"], pos["y"] - 0.25 * this.blockHeight * this.zoom);
         this.ctx.lineTo(pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"]);
@@ -166,5 +205,28 @@ class Builder {
         this.ctx.closePath();
         this.ctx.fillStyle = this.gridActiveColor;
         this.ctx.fill();
+    }
+
+    previewBlock(x, y, z) {
+        let pos = this.tilesPositions[z][y][x];
+        this.ctx.globalAlpha = 0.5;
+        this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.blockWidth * this.zoom, this.blockHeight * this.zoom);
+        this.ctx.globalAlpha = 1;
+    }
+
+    placeBlock(x, y, z) {
+        this.blocks[z][y][x] = this.selectedBlock;
+    }
+
+    switchViewMode() {
+        let icon = document.getElementById("input-view-mode-icon");
+        this.viewMode = ! this.viewMode;
+        if(this.viewMode) {
+            icon.setAttribute("src", "assets/icons/box.svg");
+        }
+        else {
+            icon.setAttribute("src", "assets/icons/eye.svg");
+        }
+        this.draw();
     }
 }

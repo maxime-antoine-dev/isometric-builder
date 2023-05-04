@@ -17,27 +17,46 @@ function () {
 
     this.blockWidth = 64;
     this.blockHeight = 64;
-    this.gridColor = "#585a64";
+    this.gridColor = "#43454d";
     this.gridActiveColor = "#36d3ff";
     this.dX = dX;
     this.dY = dY;
     this.dZ = dZ;
+    this.viewMode = false;
+    this.selectedBlock = new Block();
     this.blocks = this.makeGrid();
     document.getElementById("input-active-layer").setAttribute("max", this.dZ - 1);
     this.canvas = document.getElementById("canvas-builder");
     this.ctx = this.canvas.getContext("2d");
     this.update();
     this.canvas.addEventListener("mousemove", function (e) {
-      var pos = _this.getMousePos(e);
+      if (!_this.viewMode) {
+        var pos = _this.getMousePos(e);
 
-      var tilePos = _this.getSelectedTile(pos['x'], pos['y']);
+        var tilePos = _this.getSelectedTile(pos['x'], pos['y']);
 
-      _this.drawGrid();
+        _this.draw();
 
-      _this.highlightTile(tilePos["x"], tilePos["y"], tilePos["z"]);
+        _this.highlightTile(tilePos["x"], tilePos["y"], tilePos["z"]);
+
+        _this.previewBlock(tilePos["x"], tilePos["y"], tilePos["z"]);
+      }
     });
     this.canvas.addEventListener("mouseout", function (e) {
-      _this.drawGrid();
+      if (!_this.viewMode) {
+        _this.draw();
+      }
+    });
+    this.canvas.addEventListener("mousedown", function (e) {
+      if (!_this.viewMode) {
+        var pos = _this.getMousePos(e);
+
+        var tilePos = _this.getSelectedTile(pos['x'], pos['y']);
+
+        _this.placeBlock(tilePos["x"], tilePos["y"], tilePos["z"]);
+
+        _this.draw();
+      }
     });
   }
 
@@ -62,7 +81,7 @@ function () {
       };
       this.tilesPositions = this.getTilesPositions();
       this.activeLayer = parseInt(document.getElementById("input-active-layer").value);
-      this.drawGrid();
+      this.draw();
 
       if (document.getElementById("canvas-container").offsetWidth > this.canvas.width) {
         document.getElementById("canvas-wrapper").style.justifyContent = "center";
@@ -86,6 +105,23 @@ function () {
       }
 
       return arrX;
+    }
+  }, {
+    key: "drawBlockLayer",
+    value: function drawBlockLayer() {
+      var level = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      this.ctx.globalAlpha = active ? 1 : 0.5;
+
+      for (var i = 0; i < this.dX; i++) {
+        for (var j = 0; j < this.dY; j++) {
+          if (this.blocks[level][j][i] != undefined) {
+            this.ctx.drawImage(this.blocks[level][j][i].image, this.tilesPositions[level][j][i]["x"] - 0.5 * this.blockWidth * this.zoom, this.tilesPositions[level][j][i]["y"] - 0.75 * this.blockHeight * this.zoom, this.blockWidth * this.zoom, this.blockHeight * this.zoom);
+          }
+        }
+      }
+
+      this.ctx.globalAlpha = 1;
     }
   }, {
     key: "drawLayer",
@@ -136,17 +172,30 @@ function () {
       }
     }
   }, {
-    key: "drawGrid",
-    value: function drawGrid() {
+    key: "draw",
+    value: function draw() {
       this.clear();
 
-      for (var i = 0; i < this.dZ; i++) {
-        if (i != this.activeLayer) {
-          this.drawLayer(i);
+      if (!this.viewMode) {
+        for (var i = 0; i < this.dZ; i++) {
+          if (i != this.activeLayer) {
+            this.drawLayer(i);
+          }
+        }
+
+        for (var _i2 = 0; _i2 < this.dZ; _i2++) {
+          if (_i2 != this.activeLayer) {
+            this.drawBlockLayer(_i2);
+          }
+        }
+
+        this.drawLayer(this.activeLayer, true);
+        this.drawBlockLayer(this.activeLayer, true);
+      } else {
+        for (var _i3 = 0; _i3 < this.dZ; _i3++) {
+          this.drawBlockLayer(_i3, true);
         }
       }
-
-      this.drawLayer(this.activeLayer, true);
     }
   }, {
     key: "clear",
@@ -157,7 +206,7 @@ function () {
     key: "selectLayer",
     value: function selectLayer(level) {
       this.activeLayer = level;
-      this.drawGrid();
+      this.draw();
     }
   }, {
     key: "getTilesPositions",
@@ -220,7 +269,6 @@ function () {
     key: "highlightTile",
     value: function highlightTile(x, y, z) {
       var pos = this.tilesPositions[z][y][x];
-      console.log;
       this.ctx.beginPath();
       this.ctx.moveTo(pos["x"], pos["y"] - 0.25 * this.blockHeight * this.zoom);
       this.ctx.lineTo(pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"]);
@@ -230,6 +278,33 @@ function () {
       this.ctx.closePath();
       this.ctx.fillStyle = this.gridActiveColor;
       this.ctx.fill();
+    }
+  }, {
+    key: "previewBlock",
+    value: function previewBlock(x, y, z) {
+      var pos = this.tilesPositions[z][y][x];
+      this.ctx.globalAlpha = 0.5;
+      this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.blockWidth * this.zoom, this.blockHeight * this.zoom);
+      this.ctx.globalAlpha = 1;
+    }
+  }, {
+    key: "placeBlock",
+    value: function placeBlock(x, y, z) {
+      this.blocks[z][y][x] = this.selectedBlock;
+    }
+  }, {
+    key: "switchViewMode",
+    value: function switchViewMode() {
+      var icon = document.getElementById("input-view-mode-icon");
+      this.viewMode = !this.viewMode;
+
+      if (this.viewMode) {
+        icon.setAttribute("src", "assets/icons/box.svg");
+      } else {
+        icon.setAttribute("src", "assets/icons/eye.svg");
+      }
+
+      this.draw();
     }
   }]);
 
