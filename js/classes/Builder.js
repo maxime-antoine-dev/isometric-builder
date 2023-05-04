@@ -11,6 +11,7 @@ class Builder {
         this.dZ = dZ;
         this.viewMode = false;
         this.selectedBlock = new Block();
+
         this.blocks = this.makeGrid();
         document.getElementById("input-active-layer").setAttribute("max", this.dZ - 1);
         this.canvas = document.getElementById("canvas-builder");
