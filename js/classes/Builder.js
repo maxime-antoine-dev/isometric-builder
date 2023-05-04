@@ -216,7 +216,13 @@ class Builder {
     }
 
     placeBlock(x, y, z) {
-        this.blocks[z][y][x] = this.selectedBlock;
+        if(this.selectedBlock.id != 0) {
+            this.blocks[z][y][x] = this.selectedBlock;
+        }   
+        else {
+            this.blocks[z][y][x] = undefined;
+        } 
+
     }
 
     switchViewMode() {
@@ -229,5 +235,12 @@ class Builder {
             icon.setAttribute("src", "assets/icons/eye.svg");
         }
         this.draw();
+    }
+
+    setSelectedBlock(block) {
+        document.getElementById("block-" + this.selectedBlock.id).classList.remove("selected");
+        this.selectedBlock = block;
+        document.getElementById("block-" + this.selectedBlock.id).classList.add("selected");
+
     }
 }

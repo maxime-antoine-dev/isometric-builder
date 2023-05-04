@@ -11,12 +11,12 @@ var Block =
 /*#__PURE__*/
 function () {
   function Block() {
-    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "default";
-    var texture = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "block-blue.png";
+    var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var texture = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "empty-block.png";
 
     _classCallCheck(this, Block);
 
-    this.name = name;
+    this.id = id;
     this.texture = texture;
     this.image = createImage("./assets/textures/blocks/" + this.texture);
   }
@@ -24,7 +24,7 @@ function () {
   _createClass(Block, [{
     key: "displayData",
     value: function displayData() {
-      console.log("Name: " + this.name);
+      console.log("Id: " + this.id);
       console.log("Texture: " + this.texture);
       console.log(this.image);
     }

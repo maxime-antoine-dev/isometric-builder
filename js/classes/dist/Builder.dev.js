@@ -290,7 +290,11 @@ function () {
   }, {
     key: "placeBlock",
     value: function placeBlock(x, y, z) {
-      this.blocks[z][y][x] = this.selectedBlock;
+      if (this.selectedBlock.id != 0) {
+        this.blocks[z][y][x] = this.selectedBlock;
+      } else {
+        this.blocks[z][y][x] = undefined;
+      }
     }
   }, {
     key: "switchViewMode",
@@ -305,6 +309,13 @@ function () {
       }
 
       this.draw();
+    }
+  }, {
+    key: "setSelectedBlock",
+    value: function setSelectedBlock(block) {
+      document.getElementById("block-" + this.selectedBlock.id).classList.remove("selected");
+      this.selectedBlock = block;
+      document.getElementById("block-" + this.selectedBlock.id).classList.add("selected");
     }
   }]);
 

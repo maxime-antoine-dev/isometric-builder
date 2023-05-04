@@ -46,8 +46,36 @@ main .panel-left .btns-container .left .btn-container label {
   margin-right: 4px;
 }
 main .panel-right {
+  padding: 24px;
+  box-sizing: border-box;
+  display: block;
   width: 30%;
   background: #43454d;
+}
+main .panel-right .block-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+main .panel-right .block-container .block {
+  width: 64px;
+  height: 64px;
+  padding: 16px;
+  margin: 8px;
+  cursor: pointer;
+  border-radius: 16px;
+  border: 3px solid rgba(0, 0, 0, 0);
+}
+main .panel-right .block-container .block .image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+main .panel-right .block-container .block:hover {
+  border: 3px solid #676972;
+}
+main .panel-right .block-container .block.selected {
+  border: 3px solid #36d3ff;
 }
 
 ::-webkit-scrollbar {

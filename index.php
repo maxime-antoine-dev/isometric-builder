@@ -2,6 +2,8 @@
 
 require_once("library/functions.php");
 
+$blocks = db_select("SELECT * FROM blocks");
+
 ?>
 
 <!DOCTYPE html>
@@ -44,6 +46,31 @@ require_once("library/functions.php");
             </div>
         </div>
         <div class="panel-right">
+
+            <div class="block-container">
+
+                
+                <div class="block selected" id="block-0" title="Empty block" onclick="builder.setSelectedBlock(new Block(0))">
+                    <div class="image" style="background: url('assets/textures/blocks/empty-block.png')"></div>
+                </div>
+                
+                <?php
+                
+                foreach($blocks as $block) {
+                    
+                ?>
+
+                    <div class="block" id="block-<?=$block['id']?>" title="<?=$block["name"]?>" onclick="builder.setSelectedBlock(new Block(<?=$block['id']?>, '<?=$block['texture']?>'))">
+                        <div class="image" style="background: url('assets/textures/blocks/<?=$block["texture"]?>')"></div>
+                    </div>
+
+                <?php
+
+                }
+
+                ?>
+
+            </div>
         </div>
 
     </main>
