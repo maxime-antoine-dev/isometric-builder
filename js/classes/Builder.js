@@ -247,6 +247,9 @@ class Builder {
     export() {
         let tmpViewMode = this.viewMode;
         this.viewMode = true;
+        let tmpZoom = this.zoom;
+        this.zoom = document.getElementById("input-zoom").value = 1;
+        this.update();
         this.draw();
 
         let link = document.createElement('a');
@@ -255,6 +258,8 @@ class Builder {
         link.click();
 
         this.viewMode = tmpViewMode;
+        this.zoom = document.getElementById("input-zoom").value = tmpZoom;
+        this.update();
         this.draw();
     }
 }
