@@ -243,4 +243,18 @@ class Builder {
         document.getElementById("block-" + this.selectedBlock.id).classList.add("selected");
 
     }
+
+    export() {
+        let tmpViewMode = this.viewMode;
+        this.viewMode = true;
+        this.draw();
+
+        let link = document.createElement('a');
+        link.download = 'export-' + getDateTime() + '.png';
+        link.href = this.canvas.toDataURL('image/png');
+        link.click();
+
+        this.viewMode = tmpViewMode;
+        this.draw();
+    }
 }

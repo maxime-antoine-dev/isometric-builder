@@ -7,3 +7,11 @@ function createImage(path) {
     img.src = path;
     return img;
 }
+
+function getDateTime() {
+    let current = new Date();
+    let cDate = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
+    let cTime = current.getHours() + "-" + current.getMinutes() + "-" + current.getSeconds();
+    let dateTime = cDate + '-' + cTime;
+    return dateTime
+}

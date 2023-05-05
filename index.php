@@ -42,6 +42,9 @@ $blocks = db_select("SELECT * FROM blocks");
                     <div class="btn-container">
                         <div id="input-view-mode" onclick="builder.switchViewMode()"><img id="input-view-mode-icon" src="assets/icons/eye.svg"></div>
                     </div>
+                    <div class="btn-container">
+                        <div id="input-view-mode" onclick="builder.export()"><img id="input-view-mode-icon" src="assets/icons/download.svg"></div>
+                    </div>
                 </div>
             </div>
         </div>

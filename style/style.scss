@@ -49,7 +49,15 @@ main {
                 label {
                   margin-right: 4px;
                 }
-
+                
+              }
+            }
+            
+            .right {
+              display: flex;
+              
+              .btn-container {
+                margin-left: 16px;
               }
             }
         }

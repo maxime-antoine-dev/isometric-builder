@@ -45,6 +45,12 @@ main .panel-left .btns-container .left .btn-container {
 main .panel-left .btns-container .left .btn-container label {
   margin-right: 4px;
 }
+main .panel-left .btns-container .right {
+  display: flex;
+}
+main .panel-left .btns-container .right .btn-container {
+  margin-left: 16px;
+}
 main .panel-right {
   padding: 24px;
   box-sizing: border-box;
