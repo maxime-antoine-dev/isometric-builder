@@ -49,13 +49,17 @@ main .panel-left .btns-container .right {
   display: flex;
 }
 main .panel-left .btns-container .right .btn-container {
+  cursor: pointer;
   margin-left: 16px;
 }
 main .panel-right {
+  height: 100vh;
+  overflow-x: hidden;
   padding: 24px;
   box-sizing: border-box;
   display: block;
-  width: 30%;
+  min-width: 100px;
+  width: 35%;
   background: #43454d;
 }
 main .panel-right .block-container {
@@ -63,10 +67,10 @@ main .panel-right .block-container {
   flex-wrap: wrap;
 }
 main .panel-right .block-container .block {
+  transform: scale(0.75);
+  padding: 12px;
   width: 64px;
   height: 64px;
-  padding: 16px;
-  margin: 8px;
   cursor: pointer;
   border-radius: 16px;
   border: 3px solid rgba(0, 0, 0, 0);

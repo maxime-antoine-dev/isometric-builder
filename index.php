@@ -52,7 +52,6 @@ $blocks = db_select("SELECT * FROM blocks");
 
             <div class="block-container">
 
-                
                 <div class="block selected" id="block-0" title="Empty block" onclick="builder.setSelectedBlock(new Block(0))">
                     <div class="image" style="background: url('assets/textures/blocks/empty-block.png')"></div>
                 </div>
