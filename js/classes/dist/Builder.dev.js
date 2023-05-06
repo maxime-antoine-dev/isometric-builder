@@ -116,7 +116,7 @@ function () {
       for (var i = 0; i < this.dX; i++) {
         for (var j = 0; j < this.dY; j++) {
           if (this.blocks[level][j][i] != undefined) {
-            this.ctx.drawImage(this.blocks[level][j][i].image, this.tilesPositions[level][j][i]["x"] - 0.5 * this.blockWidth * this.zoom, this.tilesPositions[level][j][i]["y"] - 0.75 * this.blockHeight * this.zoom, this.blockWidth * this.zoom, this.blockHeight * this.zoom);
+            this.ctx.drawImage(this.blocks[level][j][i].image, this.tilesPositions[level][j][i]["x"] - 0.5 * this.blockWidth * this.zoom, this.tilesPositions[level][j][i]["y"] - 0.75 * this.blockHeight * this.zoom, this.blocks[level][j][i].width * this.zoom, this.blocks[level][j][i].height * this.zoom);
           }
         }
       }
@@ -284,7 +284,7 @@ function () {
     value: function previewBlock(x, y, z) {
       var pos = this.tilesPositions[z][y][x];
       this.ctx.globalAlpha = 0.5;
-      this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.blockWidth * this.zoom, this.blockHeight * this.zoom);
+      this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
       this.ctx.globalAlpha = 1;
     }
   }, {

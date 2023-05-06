@@ -13,9 +13,13 @@ function () {
   function Block() {
     var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
     var texture = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "empty-block.png";
+    var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 64;
+    var height = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 64;
 
     _classCallCheck(this, Block);
 
+    this.width = width;
+    this.height = height;
     this.id = id;
     this.texture = texture;
     this.image = createImage("./assets/textures/blocks/" + this.texture);

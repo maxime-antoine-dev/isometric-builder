@@ -2,7 +2,7 @@
 
 require_once("library/functions.php");
 
-$blocks = db_select("SELECT * FROM blocks");
+$blocks = db_select("SELECT * FROM blocks ORDER BY name, id ASC");
 
 ?>
 
@@ -62,7 +62,7 @@ $blocks = db_select("SELECT * FROM blocks");
                     
                 ?>
 
-                    <div class="block" id="block-<?=$block['id']?>" title="<?=$block["name"]?>" onclick="builder.setSelectedBlock(new Block(<?=$block['id']?>, '<?=$block['texture']?>'))">
+                    <div class="block" id="block-<?=$block['id']?>" title="<?=$block["name"]?>" onclick="builder.setSelectedBlock(new Block(<?=$block['id']?>, '<?=$block['texture']?>', <?=$block['width']?>, <?=$block['height']?>))">
                         <div class="image" style="background: url('assets/textures/blocks/<?=$block["texture"]?>')"></div>
                     </div>
 
