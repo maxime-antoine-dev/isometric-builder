@@ -18,7 +18,7 @@ main .panel-left {
 }
 main .panel-left .canvas-container {
   width: 100%;
-  height: calc(100% - 40px);
+  height: calc(100% - 80px);
   overflow: scroll;
   box-sizing: border-box;
 }

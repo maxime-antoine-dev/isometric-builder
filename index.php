@@ -24,6 +24,24 @@ $blocks = db_select("SELECT * FROM blocks ORDER BY name, id ASC");
 <body>
     <main>
         <div class="panel-left">
+            <div class="btns-container">
+                <div class="left">
+                    <div class="btn-container">
+                        <label for="json-loader" class="custom-file-upload">
+                            <img src="assets/icons/upload.svg">Open project
+                        </label>
+                        <input type="file" id="json-loader" accept="text/json" onchange="builder.loadJson()"/>
+                    </div>  
+                </div>
+                <div class="right">
+                    <div class="btn-container" title="Export as an image">
+                        <div id="input-export" onclick="builder.export()"><img src="assets/icons/image.svg"></div>
+                    </div>
+                    <div class="btn-container" title="Export as a project">
+                        <div id="input-save" onclick="builder.saveJson()"><img src="assets/icons/download.svg"></div>
+                    </div>
+                </div>
+            </div>
             <div id="canvas-container" class="canvas-container">
                 <div id="canvas-wrapper" class="wrapper">
                     <canvas id="canvas-builder"></canvas>
@@ -32,29 +50,17 @@ $blocks = db_select("SELECT * FROM blocks ORDER BY name, id ASC");
             <div class="btns-container">
                 <div class="left">
                     <div class="btn-container">
-                        <div id="input-view-mode" onclick="builder.switchViewMode()"><img id="input-view-mode-icon" src="assets/icons/eye.svg"></div>
-                    </div>
-                    <div class="btn-container down">
                         <label for="input-zoom">Zoom</label>
                         <input id="input-zoom" name="input-zoom" type="range" value="1" min ="0.25" max="3" step="0.01" onInput="builder.update()">
                     </div>
-                    <div class="btn-container down">
+                    <div class="btn-container">
                         <label for="input-active-layer">Active Layer</label>
                         <input id="input-active-layer" name="input-active-layer" type="range" value="0" min ="0" step="1" onInput="builder.update()">
                     </div>
                 </div>
                 <div class="right">
-                    <div class="btn-container">
-                        <label for="json-loader" class="custom-file-upload">
-                            <img src="assets/icons/upload.svg">Open project
-                        </label>
-                        <input type="file" id="json-loader" accept="text/json" onchange="builder.loadJson()"/>
-                    </div>
-                    <div class="btn-container">
-                        <div id="input-export" onclick="builder.export()"><img src="assets/icons/image.svg"></div>
-                    </div>
-                    <div class="btn-container">
-                        <div id="input-save" onclick="builder.saveJson()"><img src="assets/icons/download.svg"></div>
+                    <div class="btn-container" title="Switch view mode [M]">
+                        <div id="input-view-mode" onclick="builder.switchViewMode()"><img id="input-view-mode-icon" src="assets/icons/eye.svg"></div>
                     </div>
                 </div>
             </div>
