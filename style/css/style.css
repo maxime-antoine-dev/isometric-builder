@@ -69,6 +69,7 @@ main .panel-right {
 main .panel-right .block-container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-around;
 }
 main .panel-right .block-container .block {
   transform: scale(0.75);
