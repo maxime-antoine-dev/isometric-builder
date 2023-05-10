@@ -327,7 +327,7 @@ class Builder {
                     this.blocks.push(blocksY);
                 }
 
-                this.viewMode = true;
+                this.viewMode = false;
                 this.switchViewMode();
                 this.activeLayer = 0;
                 this.setZoom(1);

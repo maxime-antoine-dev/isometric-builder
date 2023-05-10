@@ -417,7 +417,7 @@ function () {
           _this2.blocks.push(blocksY);
         }
 
-        _this2.viewMode = true;
+        _this2.viewMode = false;
 
         _this2.switchViewMode();
 
