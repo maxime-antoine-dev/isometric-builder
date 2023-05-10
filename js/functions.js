@@ -15,3 +15,18 @@ function getDateTime() {
     let dateTime = cDate + '-' + cTime;
     return dateTime
 }
+
+jQuery.extend({
+    retriveBlocks: function() {
+        let result = [];
+        $.ajax({
+            type: 'GET',
+            url: 'ajax/blockManager.php',
+            async: false,
+            success: function (res) {
+                result = res;
+            }
+        });
+        return JSON.parse(result);
+    }
+});

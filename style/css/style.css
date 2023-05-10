@@ -45,6 +45,10 @@ main .panel-left .btns-container .left .btn-container {
 main .panel-left .btns-container .left .btn-container label {
   margin-right: 4px;
 }
+main .panel-left .btns-container .left .btn-container.down {
+  position: relative;
+  top: 4px;
+}
 main .panel-left .btns-container .right {
   display: flex;
 }
@@ -128,4 +132,21 @@ input[type=range]::-webkit-slider-thumb {
   border-radius: 8px;
   background: #36d3ff;
   -webkit-appearance: none;
+}
+
+input[type=file] {
+  display: none;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 300;
+}
+.custom-file-upload img {
+  position: relative;
+  top: 2px;
+  width: 16px;
+  margin-right: 6px;
 }

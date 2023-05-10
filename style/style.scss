@@ -49,7 +49,11 @@ main {
                 label {
                   margin-right: 4px;
                 }
-                
+              }
+
+              .btn-container.down {
+                position: relative;
+                top: 4px;
               }
             }
             
@@ -148,4 +152,22 @@ input[type=range]::-webkit-slider-thumb {
   border-radius: 8px;
   background: $blue1;
   -webkit-appearance: none;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 300;
+
+  img {
+    position: relative;
+    top: 2px;
+    width: 16px;
+    margin-right: 6px;
+  }
 }

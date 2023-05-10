@@ -2,6 +2,7 @@
 
 class Builder {
     constructor(dX, dY, dZ) {
+        this.blockManager = new BlockManager();
         this.blockWidth = 64;
         this.blockHeight = 64;
         this.gridColor = "#43454d";
@@ -16,6 +17,7 @@ class Builder {
         document.getElementById("input-active-layer").setAttribute("max", this.dZ - 1);
         this.canvas = document.getElementById("canvas-builder");
         this.ctx = this.canvas.getContext("2d");
+        this.jsonLoader = document.getElementById("json-loader");
         this.update();
 
         this.canvas.addEventListener("mousemove", (e) => {
@@ -42,6 +44,11 @@ class Builder {
                 this.draw();
             }
         });
+
+        this.jsonLoader.onchange = e => { 
+            let file = e.target.files[0];
+            this.loadJson(file);
+        }
     }
 
     getMousePos(e) {
@@ -244,12 +251,16 @@ class Builder {
 
     }
 
+    setZoom(z) {
+        this.zoom = document.getElementById("input-zoom").value = z;
+        this.update();
+    }
+
     export() {
         let tmpViewMode = this.viewMode;
         this.viewMode = true;
         let tmpZoom = this.zoom;
-        this.zoom = document.getElementById("input-zoom").value = 1;
-        this.update();
+        this.setZoom(1);
         this.draw();
 
         let link = document.createElement('a');
@@ -258,8 +269,69 @@ class Builder {
         link.click();
 
         this.viewMode = tmpViewMode;
-        this.zoom = document.getElementById("input-zoom").value = tmpZoom;
+        this.setZoom(tmpZoom);
         this.update();
         this.draw();
+    }
+
+    saveJson() {
+        let formatBlocks = [];
+        for(let i = 0; i < this.dZ; i++) {
+            let formatBlocksY = [];
+            for(let j = 0; j < this.dY; j++) {
+                let formatBlocksX = [];
+                for(let k = 0; k < this.dX; k++) {
+                    if(this.blocks[i][j][k] != undefined) {
+                        formatBlocksX.push(this.blocks[i][j][k].id);
+                    }
+                    else {
+                        formatBlocksX.push(0);
+                    }
+                }
+                formatBlocksY.push(formatBlocksX);
+            }
+            formatBlocks.push(formatBlocksY);
+        }
+        console.log(formatBlocks)
+        let data = {
+            "dX" : this.dX,
+            "dY" : this.dY,
+            "dZ" : this.dZ,
+            "blocks" : formatBlocks
+        }
+        let link = document.createElement('a');
+        link.download = 'project-' + getDateTime() + '.json';
+        link.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+        link.click();
+    }
+
+    loadJson(file) {
+            let reader = new FileReader();
+            reader.readAsText(file,'UTF-8');
+            reader.onload = readerEvent => {
+                let content = readerEvent.target.result;
+                let data = JSON.parse(content);
+                this.dX = data.dX;
+                this.dY = data.dY;
+                this.dZ = data.dZ;
+                this.blocks = [];
+                for(let i = 0; i < this.dZ; i++) {
+                    let blocksY = [];
+                    for(let j = 0; j < this.dY; j++) {
+                        let blocksX = [];
+                        for(let k = 0; k < this.dX; k++) {
+                            blocksX.push(this.blockManager.getBlock(data.blocks[i][j][k]));
+                        }
+                        blocksY.push(blocksX);
+                    }
+                    this.blocks.push(blocksY);
+                }
+
+                this.viewMode = true;
+                this.switchViewMode();
+                this.activeLayer = 0;
+                this.setZoom(1);
+                this.draw();
+            }
     }
 }

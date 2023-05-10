@@ -13,8 +13,10 @@ $blocks = db_select("SELECT * FROM blocks ORDER BY name, id ASC");
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style/css/style.css">
+    <script defer src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script defer src="./js/functions.js"></script>
     <script defer src="./js/classes/Block.js"></script>
+    <script defer src="./js/classes/BlockManager.js"></script>
     <script defer src="./js/classes/Builder.js"></script>
     <script defer src="./js/index.js"></script>
     <title>Isometric Builder</title>
@@ -30,20 +32,29 @@ $blocks = db_select("SELECT * FROM blocks ORDER BY name, id ASC");
             <div class="btns-container">
                 <div class="left">
                     <div class="btn-container">
+                        <div id="input-view-mode" onclick="builder.switchViewMode()"><img id="input-view-mode-icon" src="assets/icons/eye.svg"></div>
+                    </div>
+                    <div class="btn-container down">
                         <label for="input-zoom">Zoom</label>
                         <input id="input-zoom" name="input-zoom" type="range" value="1" min ="0.25" max="3" step="0.01" onInput="builder.update()">
                     </div>
-                    <div class="btn-container">
+                    <div class="btn-container down">
                         <label for="input-active-layer">Active Layer</label>
                         <input id="input-active-layer" name="input-active-layer" type="range" value="0" min ="0" step="1" onInput="builder.update()">
                     </div>
                 </div>
                 <div class="right">
                     <div class="btn-container">
-                        <div id="input-view-mode" onclick="builder.switchViewMode()"><img id="input-view-mode-icon" src="assets/icons/eye.svg"></div>
+                        <label for="json-loader" class="custom-file-upload">
+                            <img src="assets/icons/upload.svg">Open project
+                        </label>
+                        <input type="file" id="json-loader" accept="text/json" onchange="builder.loadJson()"/>
                     </div>
                     <div class="btn-container">
-                        <div id="input-view-mode" onclick="builder.export()"><img id="input-view-mode-icon" src="assets/icons/download.svg"></div>
+                        <div id="input-export" onclick="builder.export()"><img src="assets/icons/image.svg"></div>
+                    </div>
+                    <div class="btn-container">
+                        <div id="input-save" onclick="builder.saveJson()"><img src="assets/icons/download.svg"></div>
                     </div>
                 </div>
             </div>

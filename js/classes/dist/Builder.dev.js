@@ -15,6 +15,7 @@ function () {
 
     _classCallCheck(this, Builder);
 
+    this.blockManager = new BlockManager();
     this.blockWidth = 64;
     this.blockHeight = 64;
     this.gridColor = "#43454d";
@@ -28,6 +29,7 @@ function () {
     document.getElementById("input-active-layer").setAttribute("max", this.dZ - 1);
     this.canvas = document.getElementById("canvas-builder");
     this.ctx = this.canvas.getContext("2d");
+    this.jsonLoader = document.getElementById("json-loader");
     this.update();
     this.canvas.addEventListener("mousemove", function (e) {
       if (!_this.viewMode) {
@@ -58,6 +60,12 @@ function () {
         _this.draw();
       }
     });
+
+    this.jsonLoader.onchange = function (e) {
+      var file = e.target.files[0];
+
+      _this.loadJson(file);
+    };
   }
 
   _createClass(Builder, [{
@@ -318,22 +326,107 @@ function () {
       document.getElementById("block-" + this.selectedBlock.id).classList.add("selected");
     }
   }, {
+    key: "setZoom",
+    value: function setZoom(z) {
+      this.zoom = document.getElementById("input-zoom").value = z;
+      this.update();
+    }
+  }, {
     key: "export",
     value: function _export() {
       var tmpViewMode = this.viewMode;
       this.viewMode = true;
       var tmpZoom = this.zoom;
-      this.zoom = document.getElementById("input-zoom").value = 1;
-      this.update();
+      this.setZoom(1);
       this.draw();
       var link = document.createElement('a');
       link.download = 'export-' + getDateTime() + '.png';
       link.href = this.canvas.toDataURL('image/png');
       link.click();
       this.viewMode = tmpViewMode;
-      this.zoom = document.getElementById("input-zoom").value = tmpZoom;
+      this.setZoom(tmpZoom);
       this.update();
       this.draw();
+    }
+  }, {
+    key: "saveJson",
+    value: function saveJson() {
+      var formatBlocks = [];
+
+      for (var i = 0; i < this.dZ; i++) {
+        var formatBlocksY = [];
+
+        for (var j = 0; j < this.dY; j++) {
+          var formatBlocksX = [];
+
+          for (var k = 0; k < this.dX; k++) {
+            if (this.blocks[i][j][k] != undefined) {
+              formatBlocksX.push(this.blocks[i][j][k].id);
+            } else {
+              formatBlocksX.push(0);
+            }
+          }
+
+          formatBlocksY.push(formatBlocksX);
+        }
+
+        formatBlocks.push(formatBlocksY);
+      }
+
+      console.log(formatBlocks);
+      var data = {
+        "dX": this.dX,
+        "dY": this.dY,
+        "dZ": this.dZ,
+        "blocks": formatBlocks
+      };
+      var link = document.createElement('a');
+      link.download = 'project-' + getDateTime() + '.json';
+      link.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+      link.click();
+    }
+  }, {
+    key: "loadJson",
+    value: function loadJson(file) {
+      var _this2 = this;
+
+      var reader = new FileReader();
+      reader.readAsText(file, 'UTF-8');
+
+      reader.onload = function (readerEvent) {
+        var content = readerEvent.target.result;
+        var data = JSON.parse(content);
+        _this2.dX = data.dX;
+        _this2.dY = data.dY;
+        _this2.dZ = data.dZ;
+        _this2.blocks = [];
+
+        for (var i = 0; i < _this2.dZ; i++) {
+          var blocksY = [];
+
+          for (var j = 0; j < _this2.dY; j++) {
+            var blocksX = [];
+
+            for (var k = 0; k < _this2.dX; k++) {
+              blocksX.push(_this2.blockManager.getBlock(data.blocks[i][j][k]));
+            }
+
+            blocksY.push(blocksX);
+          }
+
+          _this2.blocks.push(blocksY);
+        }
+
+        _this2.viewMode = true;
+
+        _this2.switchViewMode();
+
+        _this2.activeLayer = 0;
+
+        _this2.setZoom(1);
+
+        _this2.draw();
+      };
     }
   }]);
 
