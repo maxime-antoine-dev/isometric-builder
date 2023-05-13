@@ -276,7 +276,7 @@ class Builder {
                 break;
             case "eye-dropper":
                 if (this.blocks[z][y][x] != null) {
-                    this.selectedBlock = this.blocks[z][y][x];
+                    this.setSelectedBlock(this.blocks[z][y][x].id);
                     this.setPencilMode("pencil");
                 } else {
                     this.setPencilMode("eraser");
