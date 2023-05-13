@@ -25,6 +25,10 @@ function () {
     this.dZ = dZ;
     this.viewMode = false;
     this.selectedBlock = new Block();
+    this.setSelectedBlock(document.getElementsByClassName('block')['0'].id.split('-')[1]);
+    this.pencilMode = "pencil";
+    this.rectangleFirstTile = null;
+    this.rectangleLastTile = null;
     this.blocks = this.makeGrid();
     document.getElementById("input-active-layer").setAttribute("max", this.dZ - 1);
     this.canvas = document.getElementById("canvas-builder");
@@ -33,15 +37,15 @@ function () {
     this.update();
     this.canvas.addEventListener("mousemove", function (e) {
       if (!_this.viewMode) {
-        var pos = _this.getMousePos(e);
+        var _pos = _this.getMousePos(e);
 
-        var tilePos = _this.getSelectedTile(pos['x'], pos['y']);
+        var tilePos = _this.getSelectedTile(_pos['x'], _pos['y']);
 
         _this.draw();
 
         _this.highlightTile(tilePos["x"], tilePos["y"], tilePos["z"]);
 
-        _this.previewBlock(tilePos["x"], tilePos["y"], tilePos["z"]);
+        _this.preview(tilePos["x"], tilePos["y"], tilePos["z"]);
       }
     });
     this.canvas.addEventListener("mouseout", function (e) {
@@ -51,11 +55,11 @@ function () {
     });
     this.canvas.addEventListener("mousedown", function (e) {
       if (!_this.viewMode) {
-        var pos = _this.getMousePos(e);
+        var _pos2 = _this.getMousePos(e);
 
-        var tilePos = _this.getSelectedTile(pos['x'], pos['y']);
+        var tilePos = _this.getSelectedTile(_pos2['x'], _pos2['y']);
 
-        _this.placeBlock(tilePos["x"], tilePos["y"], tilePos["z"]);
+        _this.place(tilePos["x"], tilePos["y"], tilePos["z"]);
 
         _this.draw();
       }
@@ -288,20 +292,133 @@ function () {
       this.ctx.fill();
     }
   }, {
-    key: "previewBlock",
-    value: function previewBlock(x, y, z) {
-      var pos = this.tilesPositions[z][y][x];
+    key: "preview",
+    value: function preview(x, y, z) {
       this.ctx.globalAlpha = 0.5;
-      this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+      var pos = this.tilesPositions[z][y][x];
+      var blockEraser = new Block();
+
+      switch (this.pencilMode) {
+        case "rectangle":
+          if (this.rectangleFirstTile != null && this.rectangleLastTile == null) {
+            for (var i = 0; i < this.dY; i++) {
+              for (var j = 0; j < this.dX; j++) {
+                if (i >= Math.min(this.rectangleFirstTile["y"], y) && i <= Math.max(this.rectangleFirstTile["y"], y) && j >= Math.min(this.rectangleFirstTile["x"], x) && j <= Math.max(this.rectangleFirstTile["x"], x)) {
+                  var posTmp = this.tilesPositions[z][i][j];
+                  this.ctx.drawImage(this.selectedBlock.image, posTmp["x"] - 0.5 * this.blockWidth * this.zoom, posTmp["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+                }
+              }
+            }
+          } else {
+            this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+          }
+
+          break;
+
+        case "eye-dropper":
+          break;
+
+        case "filler":
+          for (var _i4 = 0; _i4 < this.dY; _i4++) {
+            for (var _j = 0; _j < this.dX; _j++) {
+              if (this.blocks[z][_i4][_j] == null) {
+                var _posTmp = this.tilesPositions[z][_i4][_j];
+                this.ctx.drawImage(this.selectedBlock.image, _posTmp["x"] - 0.5 * this.blockWidth * this.zoom, _posTmp["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+              }
+            }
+          }
+
+          break;
+
+        case "eraser":
+          this.ctx.drawImage(blockEraser.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+          break;
+
+        case "eraser-layer":
+          for (var _i5 = 0; _i5 < this.dY; _i5++) {
+            for (var _j2 = 0; _j2 < this.dX; _j2++) {
+              var _posTmp2 = this.tilesPositions[z][_i5][_j2];
+              this.ctx.drawImage(blockEraser.image, _posTmp2["x"] - 0.5 * this.blockWidth * this.zoom, _posTmp2["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+            }
+          }
+
+          break;
+
+        default:
+          this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+      }
+
       this.ctx.globalAlpha = 1;
     }
   }, {
-    key: "placeBlock",
-    value: function placeBlock(x, y, z) {
-      if (this.selectedBlock.id != 0) {
-        this.blocks[z][y][x] = this.selectedBlock;
-      } else {
-        this.blocks[z][y][x] = undefined;
+    key: "place",
+    value: function place(x, y, z) {
+      switch (this.pencilMode) {
+        case "eraser":
+          this.blocks[z][y][x] = undefined;
+          break;
+
+        case "eye-dropper":
+          if (this.blocks[z][y][x] != null) {
+            this.selectedBlock = this.blocks[z][y][x];
+            this.setPencilMode("pencil");
+          } else {
+            this.setPencilMode("eraser");
+          }
+
+          break;
+
+        case "rectangle":
+          if (this.rectangleFirstTile == null) {
+            this.rectangleFirstTile = {
+              "x": x,
+              "y": y,
+              "z": z
+            };
+            this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+          } else if (this.rectangleFirstTile != null && this.rectangleLastTile == null) {
+            this.rectangleLastTile = {
+              "x": x,
+              "y": y,
+              "z": z
+            };
+
+            for (var i = 0; i < this.dY; i++) {
+              for (var j = 0; j < this.dX; j++) {
+                if (i >= Math.min(this.rectangleFirstTile["y"], this.rectangleLastTile["y"]) && i <= Math.max(this.rectangleFirstTile["y"], this.rectangleLastTile["y"]) && j >= Math.min(this.rectangleFirstTile["x"], this.rectangleLastTile["x"]) && j <= Math.max(this.rectangleFirstTile["x"], this.rectangleLastTile["x"])) {
+                  this.blocks[z][i][j] = this.selectedBlock;
+                }
+              }
+            }
+
+            this.rectangleFirstTile = null;
+            this.rectangleLastTile = null;
+          }
+
+          break;
+
+        case "filler":
+          for (var _i6 = 0; _i6 < this.dY; _i6++) {
+            for (var _j3 = 0; _j3 < this.dX; _j3++) {
+              if (this.blocks[z][_i6][_j3] == null) {
+                this.blocks[z][_i6][_j3] = this.selectedBlock;
+              }
+            }
+          }
+
+          break;
+
+        case "eraser-layer":
+          for (var _i7 = 0; _i7 < this.dY; _i7++) {
+            for (var _j4 = 0; _j4 < this.dX; _j4++) {
+              this.blocks[z][_i7][_j4] = null;
+            }
+          }
+
+          break;
+
+        default:
+          this.blocks[z][y][x] = this.selectedBlock;
       }
     }
   }, {
@@ -320,9 +437,12 @@ function () {
     }
   }, {
     key: "setSelectedBlock",
-    value: function setSelectedBlock(block) {
-      document.getElementById("block-" + this.selectedBlock.id).classList.remove("selected");
-      this.selectedBlock = block;
+    value: function setSelectedBlock(blockId) {
+      if (this.selectedBlock.id != 0) {
+        document.getElementById("block-" + this.selectedBlock.id).classList.remove("selected");
+      }
+
+      this.selectedBlock = this.blockManager.getBlock(blockId);
       document.getElementById("block-" + this.selectedBlock.id).classList.add("selected");
     }
   }, {
@@ -427,6 +547,15 @@ function () {
 
         _this2.draw();
       };
+    }
+  }, {
+    key: "setPencilMode",
+    value: function setPencilMode(mode) {
+      this.rectangleFirstTile = null;
+      this.rectangleLastTile = null;
+      document.getElementById("tool-" + this.pencilMode).classList.remove("selected");
+      this.pencilMode = mode;
+      document.getElementById("tool-" + this.pencilMode).classList.add("selected");
     }
   }]);
 

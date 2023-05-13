@@ -65,26 +65,45 @@ $blocks = db_select("SELECT * FROM blocks ORDER BY name, id ASC");
                 </div>
             </div>
         </div>
+        <div class="panel-center">
+            <div class="before-bar"><div class="inner"></div></div>
+            <div class="bar-container">
+                <div id="tool-pencil" class="tool selected" onclick="builder.setPencilMode('pencil')">
+                    <img src="assets/icons/pencil.svg">
+                </div>
+                <div id="tool-eraser" class="tool" onclick="builder.setPencilMode('eraser')">
+                    <img src="assets/icons/eraser.svg">
+                </div>
+                <div id="tool-eye-dropper" class="tool" onclick="builder.setPencilMode('eye-dropper')">
+                    <img src="assets/icons/eye-dropper.svg">
+                </div>
+                <div id="tool-rectangle" class="tool" onclick="builder.setPencilMode('rectangle')">
+                    <img src="assets/icons/square.svg">
+                </div>
+                <div id="tool-filler" class="tool" onclick="builder.setPencilMode('filler')">
+                    <img src="assets/icons/filler.svg">
+                </div>
+                <div id="tool-eraser-layer" class="tool" onclick="builder.setPencilMode('eraser-layer')">
+                    <img src="assets/icons/x.svg">
+                </div>
+            </div>
+            <div class="after-bar"><div class="inner"></div></div>
+        </div>
         <div class="panel-right">
 
-            <div class="block-container">
-
-                <div class="block selected" id="block-0" title="Empty block" onclick="builder.setSelectedBlock(new Block(0))">
-                    <div class="image" style="background: url('assets/textures/blocks/empty-block.png')"></div>
-                </div>
-                
+            <div class="block-container">               
                 <?php
-                
+
                 foreach($blocks as $block) {
                     
                 ?>
 
-                    <div class="block" id="block-<?=$block['id']?>" title="<?=$block["name"]?>" onclick="builder.setSelectedBlock(new Block(<?=$block['id']?>, '<?=$block['texture']?>', <?=$block['width']?>, <?=$block['height']?>))">
+                    <div class="block" id="block-<?=$block['id']?>" title="<?=$block["name"]?>" onclick="builder.setSelectedBlock(<?=$block['id']?>)">
                         <div class="image" style="background: url('assets/textures/blocks/<?=$block["texture"]?>')"></div>
                     </div>
 
                 <?php
-
+                
                 }
 
                 ?>

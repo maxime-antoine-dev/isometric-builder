@@ -13,7 +13,7 @@ main {
   display: flex;
 }
 main .panel-left {
-  width: 70%;
+  width: 65%;
   min-width: 500px;
 }
 main .panel-left .canvas-container {
@@ -56,6 +56,58 @@ main .panel-left .btns-container .right .btn-container {
   cursor: pointer;
   margin-left: 16px;
 }
+main .panel-center {
+  width: 56px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+main .panel-center .before-bar, main .panel-center .after-bar {
+  width: 100%;
+  height: 56px;
+  background: #43454d;
+}
+main .panel-center .before-bar .inner, main .panel-center .after-bar .inner {
+  width: 100%;
+  height: 100%;
+  background: #303238;
+}
+main .panel-center .before-bar .inner {
+  border-bottom-right-radius: 16px;
+}
+main .panel-center .after-bar .inner {
+  border-top-right-radius: 16px;
+}
+main .panel-center .bar-container {
+  width: 100%;
+  background: #43454d;
+  padding: 8px 8px;
+  box-sizing: border-box;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+main .panel-center .bar-container .tool {
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+main .panel-center .bar-container .tool img {
+  width: 24px;
+}
+main .panel-center .bar-container .tool:hover {
+  background: #676972;
+}
+main .panel-center .bar-container .tool:last-child {
+  margin-bottom: 0;
+}
+main .panel-center .bar-container .tool.selected {
+  background: #676972;
+}
 main .panel-right {
   height: 100vh;
   overflow-x: hidden;
@@ -63,7 +115,7 @@ main .panel-right {
   box-sizing: border-box;
   display: block;
   min-width: 100px;
-  width: 35%;
+  width: calc(35% - 56px);
   background: #43454d;
 }
 main .panel-right .block-container {

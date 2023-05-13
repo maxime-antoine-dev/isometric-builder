@@ -12,6 +12,10 @@ class Builder {
         this.dZ = dZ;
         this.viewMode = false;
         this.selectedBlock = new Block();
+        this.setSelectedBlock(document.getElementsByClassName('block')['0'].id.split('-')[1]);
+        this.pencilMode = "pencil";
+        this.rectangleFirstTile = null;
+        this.rectangleLastTile = null;
 
         this.blocks = this.makeGrid();
         document.getElementById("input-active-layer").setAttribute("max", this.dZ - 1);
@@ -26,7 +30,7 @@ class Builder {
                 let tilePos = this.getSelectedTile(pos['x'], pos['y']);
                 this.draw();
                 this.highlightTile(tilePos["x"], tilePos["y"], tilePos["z"]);
-                this.previewBlock(tilePos["x"], tilePos["y"], tilePos["z"]);
+                this.preview(tilePos["x"], tilePos["y"], tilePos["z"]);
             }
         });
 
@@ -40,7 +44,7 @@ class Builder {
             if(! this.viewMode) {
                 let pos = this.getMousePos(e);
                 let tilePos = this.getSelectedTile(pos['x'], pos['y']);
-                this.placeBlock(tilePos["x"], tilePos["y"], tilePos["z"]);
+                this.place(tilePos["x"], tilePos["y"], tilePos["z"]);
                 this.draw();
             }
         });
@@ -215,22 +219,110 @@ class Builder {
         this.ctx.fill();
     }
 
-    previewBlock(x, y, z) {
-        let pos = this.tilesPositions[z][y][x];
+    preview(x, y, z) {
         this.ctx.globalAlpha = 0.5;
-        this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
-        this.ctx.globalAlpha = 1;
+        let pos = this.tilesPositions[z][y][x];
+        let blockEraser = new Block();
+
+        switch (this.pencilMode) {
+            case "rectangle":
+                if(this.rectangleFirstTile != null && this.rectangleLastTile == null) {
+                    for (let i = 0; i < this.dY; i++) {
+                        for (let j = 0; j < this.dX; j++) {
+                            if (i >= Math.min(this.rectangleFirstTile["y"], y) && i <= Math.max(this.rectangleFirstTile["y"], y) && j >= Math.min(this.rectangleFirstTile["x"], x) && j <= Math.max(this.rectangleFirstTile["x"], x)) {
+                                let posTmp = this.tilesPositions[z][i][j];
+                                this.ctx.drawImage(this.selectedBlock.image, posTmp["x"] - 0.5 * this.blockWidth * this.zoom, posTmp["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+                            }
+                        }
+                    }
+                    
+                } else {
+                    this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+                }
+                break;
+            case "eye-dropper":
+                break;
+            case "filler":
+                for (let i = 0; i < this.dY; i++) {
+                    for (let j = 0; j < this.dX; j++) {
+                        if (this.blocks[z][i][j] == null) {
+                            let posTmp = this.tilesPositions[z][i][j];
+                            this.ctx.drawImage(this.selectedBlock.image, posTmp["x"] - 0.5 * this.blockWidth * this.zoom, posTmp["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+                        }
+                    }
+                }
+                break;
+            case "eraser":
+                this.ctx.drawImage(blockEraser.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+                break;
+            case "eraser-layer":
+                for (let i = 0; i < this.dY; i++) {
+                    for (let j = 0; j < this.dX; j++) {
+                        let posTmp = this.tilesPositions[z][i][j];
+                        this.ctx.drawImage(blockEraser.image, posTmp["x"] - 0.5 * this.blockWidth * this.zoom, posTmp["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+                    }
+                }
+                break;
+            default:
+                this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+            }
+        this.ctx.globalAlpha = 1; 
     }
 
-    placeBlock(x, y, z) {
-        if(this.selectedBlock.id != 0) {
-            this.blocks[z][y][x] = this.selectedBlock;
-        }   
-        else {
-            this.blocks[z][y][x] = undefined;
-        } 
+    place(x, y, z) {
+        switch (this.pencilMode) {
+            case "eraser":
+                this.blocks[z][y][x] = undefined;
+                break;
+            case "eye-dropper":
+                if (this.blocks[z][y][x] != null) {
+                    this.selectedBlock = this.blocks[z][y][x];
+                    this.setPencilMode("pencil");
+                } else {
+                    this.setPencilMode("eraser");
+                }
+                break;
+            case "rectangle":
+                if (this.rectangleFirstTile == null) {
+                    this.rectangleFirstTile = {"x" : x, "y" : y, "z" : z};
+                    this.ctx.drawImage(this.selectedBlock.image, pos["x"] - 0.5 * this.blockWidth * this.zoom, pos["y"] - 0.75 * this.blockHeight * this.zoom, this.selectedBlock.width * this.zoom, this.selectedBlock.height * this.zoom);
+                } else
+                if(this.rectangleFirstTile != null && this.rectangleLastTile == null) {
+                    this.rectangleLastTile = {"x" : x, "y" : y, "z" : z};
 
+                    for (let i = 0; i < this.dY; i++) {
+                        for (let j = 0; j < this.dX; j++) {
+                            if (i >= Math.min(this.rectangleFirstTile["y"], this.rectangleLastTile["y"]) && i <= Math.max(this.rectangleFirstTile["y"], this.rectangleLastTile["y"]) && j >= Math.min(this.rectangleFirstTile["x"], this.rectangleLastTile["x"]) && j <= Math.max(this.rectangleFirstTile["x"], this.rectangleLastTile["x"])) {
+                                this.blocks[z][i][j] = this.selectedBlock;
+                            }
+                        }
+                    }
+
+                    this.rectangleFirstTile = null;
+                    this.rectangleLastTile = null;
+                }
+                break;
+            case "filler":
+                for (let i = 0; i < this.dY; i++) {
+                    for (let j = 0; j < this.dX; j++) {
+                        if (this.blocks[z][i][j] == null) {
+                            this.blocks[z][i][j] = this.selectedBlock;
+                        }
+                    }
+                }
+                break;
+            case "eraser-layer":
+                for (let i = 0; i < this.dY; i++) {
+                    for (let j = 0; j < this.dX; j++) {
+                        this.blocks[z][i][j] = null;
+                    }
+                }
+                break;
+            default:
+                this.blocks[z][y][x] = this.selectedBlock;
+            }
     }
+
 
     switchViewMode() {
         let icon = document.getElementById("input-view-mode-icon");
@@ -244,11 +336,12 @@ class Builder {
         this.draw();
     }
 
-    setSelectedBlock(block) {
-        document.getElementById("block-" + this.selectedBlock.id).classList.remove("selected");
-        this.selectedBlock = block;
+    setSelectedBlock(blockId) {
+        if (this.selectedBlock.id != 0) {
+            document.getElementById("block-" + this.selectedBlock.id).classList.remove("selected");        
+        }
+        this.selectedBlock = this.blockManager.getBlock(blockId);
         document.getElementById("block-" + this.selectedBlock.id).classList.add("selected");
-
     }
 
     setZoom(z) {
@@ -333,5 +426,13 @@ class Builder {
                 this.setZoom(1);
                 this.draw();
             }
+    }
+
+    setPencilMode(mode) {
+        this.rectangleFirstTile = null;
+        this.rectangleLastTile = null;
+        document.getElementById("tool-" + this.pencilMode).classList.remove("selected");        
+        this.pencilMode = mode;
+        document.getElementById("tool-" + this.pencilMode).classList.add("selected");        
     }
 }
