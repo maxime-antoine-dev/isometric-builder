@@ -7,4 +7,4 @@ Created by Maxime Antoine
 You can create, save and import you projects for free with no limit, you can also export your texture in a .png format.
 
 The software is on available for free here :
-[Isometric Builder](www.maxime-antoine.fr/projects/isoBuilder/)
+[Isometric Builder](https://www.maxime-antoine.fr/projects/isoBuilder/)
