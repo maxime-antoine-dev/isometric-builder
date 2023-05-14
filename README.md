@@ -8,3 +8,6 @@ You can create, save and import you projects for free with no limit, you can als
 
 The software is on available for free here :
 [Isometric Builder](https://www.maxime-antoine.fr/projects/isoBuilder/)
+
+## Example
+![Exported texture](https://www.maxime-antoine.fr/content/isoBuilder-1.png)
